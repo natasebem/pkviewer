@@ -25,8 +25,9 @@
       "esri/widgets/LayerList",
       "esri/widgets/Legend",
       "esri/widgets/BasemapGallery",
-      "esri/widgets/Expand"
-    ], function (WebMap, MapView, LayerList, Legend, BasemapGallery, Expand) {
+      "esri/widgets/Expand",
+      "esri/widgets/Locate"
+    ], function (WebMap, MapView, LayerList, Legend, BasemapGallery, Expand, Locate) {
 
       const webmap = new WebMap({
         portalItem: { id: "a0d903e19b594381a42242960f6af1f6" }   // <-- change this
@@ -46,6 +47,16 @@
 
         // Basemap switcher
         const basemapGallery = new BasemapGallery({ view });
+
+        // GPS "My Location" button
+        const locate = new Locate({
+          view,
+          useHeadingEnabled: true,
+          goToOverride: (view, options) => {
+            options.target.scale = 2500; // zoom level when locating (adjust if you want)
+            return view.goTo(options.target);
+          }
+        });
 
         // Put each one in an Expand so it doesn't clutter the map
         const layerExpand = new Expand({
@@ -73,6 +84,7 @@
         });
 
         // Add to UI
+        view.ui.add(locate, "top-left");
         view.ui.add(layerExpand, "top-right");
         view.ui.add(legendExpand, "top-right");
         view.ui.add(basemapExpand, "top-right");
