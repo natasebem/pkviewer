@@ -2,8 +2,10 @@
 <html>
 <head>
   <meta charset="utf-8" />
-  <title>My Map</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>GJ Pokemap</title>
 
+  <!-- ArcGIS Maps SDK for JavaScript (4.x CDN) -->
   <link rel="stylesheet" href="https://js.arcgis.com/4.30/esri/themes/light/main.css">
   <script src="https://js.arcgis.com/4.30/"></script>
 
@@ -17,17 +19,63 @@
   </style>
 
   <script>
-    require(["esri/WebMap", "esri/views/MapView"], (WebMap, MapView) => {
+    require([
+      "esri/WebMap",
+      "esri/views/MapView",
+      "esri/widgets/LayerList",
+      "esri/widgets/Legend",
+      "esri/widgets/BasemapGallery",
+      "esri/widgets/Expand"
+    ], function (WebMap, MapView, LayerList, Legend, BasemapGallery, Expand) {
 
       const webmap = new WebMap({
-        portalItem: {
-          id: "a0d903e19b594381a42242960f6af1f6"
-        }
+        portalItem: { id: "a0d903e19b594381a42242960f6af1f6" }   // <-- change this
       });
 
       const view = new MapView({
         container: "viewDiv",
         map: webmap
+      });
+
+      view.when(() => {
+        // Layer toggle panel
+        const layerList = new LayerList({ view });
+
+        // Legend
+        const legend = new Legend({ view });
+
+        // Basemap switcher
+        const basemapGallery = new BasemapGallery({ view });
+
+        // Put each one in an Expand so it doesn't clutter the map
+        const layerExpand = new Expand({
+          view,
+          content: layerList,
+          expanded: false,
+          mode: "floating",
+          expandTooltip: "Layers"
+        });
+
+        const legendExpand = new Expand({
+          view,
+          content: legend,
+          expanded: false,
+          mode: "floating",
+          expandTooltip: "Legend"
+        });
+
+        const basemapExpand = new Expand({
+          view,
+          content: basemapGallery,
+          expanded: false,
+          mode: "floating",
+          expandTooltip: "Basemap"
+        });
+
+        // Add to UI
+        view.ui.add(layerExpand, "top-right");
+        view.ui.add(legendExpand, "top-right");
+        view.ui.add(basemapExpand, "top-right");
       });
 
     });
